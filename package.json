@@ -1,0 +1,19 @@
+{
+  "name": "thema_typescrypt",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "dev:frontend": "pnpm --dir frontend dev",
+    "dev:backend": "cd backend && python -m uvicorn app.main:app --reload --port 8000",
+    "build": "pnpm --dir frontend build",
+    "test:frontend": "pnpm --dir frontend test --run",
+    "test:backend": "cd backend && pytest",
+    "api:export": "cd backend && python scripts/export_openapi.py",
+    "api:generate": "openapi-typescript frontend/openapi/schema.json -o frontend/src/generated/schema.ts"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.6.1"
+  }
+}
