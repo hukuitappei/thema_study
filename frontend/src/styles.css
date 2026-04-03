@@ -115,6 +115,42 @@ body {
   color: #485363;
 }
 
+.item-owner {
+  margin-bottom: 8px;
+  color: #8c4e2b;
+  font-size: 0.9rem;
+}
+
+.item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(140, 78, 43, 0.1);
+  color: #8c4e2b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.item-timestamp {
+  display: block;
+  margin: 8px 0 10px;
+  color: #6a7280;
+  font-size: 0.85rem;
+}
+
+.item-form h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
 .auth-summary p {
   margin: 6px 0 0;
   color: #485363;
@@ -186,9 +222,70 @@ body {
   margin-top: 14px;
 }
 
+.tag-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tag-filter {
+  border: 1px solid rgba(140, 78, 43, 0.18);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #8c4e2b;
+  font: inherit;
+  cursor: pointer;
+}
+
+.tag-filter.active {
+  background: #8c4e2b;
+  color: #fff;
+}
+
+.list-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.control-field {
+  display: grid;
+  gap: 8px;
+}
+
+.control-field span {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.control-field input,
+.control-field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(16, 35, 58, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #10233a;
+  font: inherit;
+}
+
 .error {
   color: #b00020;
   font-weight: 600;
+}
+
+.notice {
+  margin: 12px 0 0;
+  color: #8c4e2b;
+  font-weight: 600;
+}
+
+.empty-state {
+  margin: 20px 0 0;
+  color: #566173;
 }
 
 @media (max-width: 640px) {
@@ -199,5 +296,9 @@ body {
   .panel {
     padding: 18px;
     border-radius: 18px;
+  }
+
+  .list-controls {
+    grid-template-columns: 1fr;
   }
 }

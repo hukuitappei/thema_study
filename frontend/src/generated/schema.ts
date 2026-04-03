@@ -52,6 +52,24 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Update Me */
+        patch: operations["update_me_api_auth_me_patch"];
+        trace?: never;
+    };
+    "/api/auth/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change Password */
+        post: operations["change_password_api_auth_change_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -86,6 +104,23 @@ export interface paths {
         post?: never;
         /** Delete Item */
         delete: operations["delete_item_api_items__item_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Tags */
+        get: operations["get_tags_api_tags_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -132,6 +167,8 @@ export interface components {
             title: string;
             /** Description */
             description?: string | null;
+            /** Tags */
+            tags?: string[];
         };
         /** ItemListResponse */
         ItemListResponse: {
@@ -146,6 +183,9 @@ export interface components {
             title: string;
             /** Description */
             description?: string | null;
+            owner: components["schemas"]["UserProfile"];
+            /** Tags */
+            tags: components["schemas"]["TagRead"][];
             /**
              * Created At
              * Format: date-time
@@ -158,6 +198,8 @@ export interface components {
             title: string;
             /** Description */
             description?: string | null;
+            /** Tags */
+            tags?: string[];
         };
         /** LoginRequest */
         LoginRequest: {
@@ -174,6 +216,13 @@ export interface components {
             token_type: string;
             user: components["schemas"]["UserProfile"];
         };
+        /** PasswordChangeRequest */
+        PasswordChangeRequest: {
+            /** Current Password */
+            current_password: string;
+            /** New Password */
+            new_password: string;
+        };
         /** RegisterRequest */
         RegisterRequest: {
             /** Username */
@@ -183,10 +232,32 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** TagListResponse */
+        TagListResponse: {
+            /** Tags */
+            tags: components["schemas"]["TagSummary"][];
+        };
+        /** TagRead */
+        TagRead: {
+            /** Name */
+            name: string;
+        };
+        /** TagSummary */
+        TagSummary: {
+            /** Name */
+            name: string;
+            /** Item Count */
+            item_count: number;
+        };
         /** UserProfile */
         UserProfile: {
             /** Username */
             username: string;
+            /** Display Name */
+            display_name: string;
+        };
+        /** UserProfileUpdate */
+        UserProfileUpdate: {
             /** Display Name */
             display_name: string;
         };
@@ -290,6 +361,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserProfile"];
+                };
+            };
+        };
+    };
+    update_me_api_auth_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserProfileUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfile"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_password_api_auth_change_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordChangeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -407,6 +542,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tags_api_tags_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TagListResponse"];
                 };
             };
         };

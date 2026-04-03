@@ -10,6 +10,8 @@
     "build": "pnpm --dir frontend build",
     "test:frontend": "pnpm --dir frontend test --run",
     "test:backend": "cd backend && pytest",
+    "db:migrate": "cd backend && python -m alembic upgrade head",
+    "db:revision": "cd backend && python -m alembic revision --autogenerate",
     "api:export": "cd backend && python scripts/export_openapi.py",
     "api:generate": "openapi-typescript frontend/openapi/schema.json -o frontend/src/generated/schema.ts"
   },

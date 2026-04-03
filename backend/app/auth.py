@@ -8,7 +8,14 @@ from app.config import ACCESS_TOKEN_TTL_HOURS
 from app.database import get_db
 from app.models import AuthToken, User
 from app.security import hash_password, issue_token, verify_password
-from app.schemas import LoginRequest, LoginResponse, RegisterRequest, UserProfile
+from app.schemas import (
+    LoginRequest,
+    LoginResponse,
+    PasswordChangeRequest,
+    RegisterRequest,
+    UserProfile,
+    UserProfileUpdate,
+)
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
@@ -86,3 +93,40 @@ def get_current_user(
         )
 
     return UserProfile(username=user.username, display_name=user.display_name)
+
+
+def update_profile(
+    current_username: str, payload: UserProfileUpdate, db: Session
+) -> UserProfile:
+    user = db.query(User).filter(User.username == current_username).one()
+    user.display_name = payload.display_name
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return UserProfile(username=user.username, display_name=user.display_name)
+
+
+def change_password(
+    current_username: str, payload: PasswordChangeRequest, db: Session
+) -> None:
+    user = db.query(User).filter(User.username == current_username).one()
+    if not verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
+    if payload.current_password == payload.new_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different",
+        )
+
+    user.password_hash = hash_password(payload.new_password)
+    db.add(user)
+    db.query(AuthToken).filter(AuthToken.user_id == user.id).delete()
+    db.commit()
+
+
+def get_user_by_username(username: str, db: Session) -> User:
+    return db.query(User).filter(User.username == username).one()

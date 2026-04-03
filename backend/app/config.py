@@ -19,7 +19,7 @@ def load_env_file() -> None:
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 load_env_file()
-DATABASE_URL = f"sqlite:///{DATA_DIR / 'app.db'}"
+DATABASE_URL = os.getenv("THEMA_DATABASE_URL", f"sqlite:///{DATA_DIR / 'app.db'}")
 APP_NAME = "thema-backend"
 APP_VERSION = "0.1.0"
 DEV_USERNAME = os.getenv("THEMA_DEV_USERNAME", "admin")

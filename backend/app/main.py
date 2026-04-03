@@ -3,16 +3,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth_router, router as items_router
-from app.bootstrap import ensure_seed_data
+from app.api import auth_router, router as items_router, tags_router
+from app.bootstrap import ensure_seed_data, run_migrations
 from app.config import APP_NAME, APP_VERSION
-from app.database import Base, SessionLocal, engine
+from app.database import SessionLocal
 from app.schemas import HealthResponse
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    run_migrations()
     with SessionLocal() as db:
         ensure_seed_data(db)
     yield
@@ -31,6 +31,7 @@ app.add_middleware(
 )
 app.include_router(auth_router)
 app.include_router(items_router)
+app.include_router(tags_router)
 
 
 @app.get("/health", response_model=HealthResponse, tags=["health"])
