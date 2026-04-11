@@ -47,12 +47,13 @@ export function filterAndSortItems(params: {
 
   return [...items]
     .filter((item) => {
-      if (
-        ownershipFilter === "mine" &&
-        currentUsername &&
-        item.owner.username !== currentUsername
-      ) {
-        return false;
+      if (ownershipFilter === "mine") {
+        if (!currentUsername) {
+          return false;
+        }
+        if (item.owner.username !== currentUsername) {
+          return false;
+        }
       }
 
       if (selectedTag && !item.tags.some((tag) => tag.name === selectedTag)) {

@@ -174,6 +174,32 @@ def test_list_tags() -> None:
         assert tags["react"] >= 1
 
 
+def test_list_tags_excludes_unused_tags() -> None:
+    with TestClient(app) as client:
+        headers = auth_headers()
+        create_response = client.post(
+            "/api/items",
+            json={
+                "title": "Disposable tag",
+                "description": "Will be deleted",
+                "tags": ["temporary-tag"],
+            },
+            headers=headers,
+        )
+        assert create_response.status_code == 201
+
+        item_id = create_response.json()["id"]
+
+        delete_response = client.delete(f"/api/items/{item_id}", headers=headers)
+        assert delete_response.status_code == 204
+
+        response = client.get("/api/tags")
+        assert response.status_code == 200
+        assert "temporary-tag" not in {
+            tag["name"] for tag in response.json()["tags"]
+        }
+
+
 def test_create_and_list_items_with_tags() -> None:
     with TestClient(app) as client:
         create_response = client.post(

@@ -251,6 +251,19 @@ body {
   margin-top: 20px;
 }
 
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pagination-summary {
+  color: #566173;
+  font-size: 0.95rem;
+}
+
 .control-field {
   display: grid;
   gap: 8px;
@@ -300,5 +313,10 @@ body {
 
   .list-controls {
     grid-template-columns: 1fr;
+  }
+
+  .pagination-bar {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

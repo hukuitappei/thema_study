@@ -43,6 +43,7 @@ def list_tags(db: Session) -> list[dict[str, int | str]]:
         db.query(Tag.name, func.count(item_tags.c.item_id).label("item_count"))
         .outerjoin(item_tags, Tag.id == item_tags.c.tag_id)
         .group_by(Tag.id)
+        .having(func.count(item_tags.c.item_id) > 0)
         .order_by(func.count(item_tags.c.item_id).desc(), Tag.name.asc())
         .all()
     )
