@@ -45,6 +45,30 @@ python scripts/export_openapi.py
 4. アプリ起動時にも `head` まで自動適用されるため、起動時に未適用 migration があっても追従します。
 5. スキーマ変更の手順や注意点は、この README と migration ファイルの両方に残します。
 
+### migration を作るタイミング
+
+- テーブル追加、カラム追加・削除、制約や index の変更をしたときは migration を作成します。
+- API や CRUD だけの変更で DB スキーマに差分がない場合は、新しい migration は不要です。
+- `alembic revision --autogenerate` の結果が空に近い場合でも、意図した差分かどうかは必ず目視確認します。
+
+### migration レビュー時の確認項目
+
+- `revision` と `down_revision` が正しくつながっていること。
+- `upgrade()` と `downgrade()` が対になっていて、作成物を戻せること。
+- index、unique 制約、外部キーがモデル定義どおりに入っていること。
+- 既存データに影響する変更では、データ移行や null 許容の扱いが明示されていること。
+
+### 起動時自動適用の注意
+
+- アプリ起動時にも migration は `head` まで自動適用されます。
+- そのため、壊れた migration を main に入れると、ローカル起動時点で失敗します。
+- スキーマ変更を含む PR では、少なくとも `python -m alembic upgrade head` と `pytest` の両方を通してから共有する運用が安全です。
+
+### 現在の migration
+
+- `20260403_0001_initial_schema.py`: users / items / auth_tokens の初期作成
+- `20260403_0002_add_tags.py`: tags / item_tags の追加
+
 ## API
 
 ### Health

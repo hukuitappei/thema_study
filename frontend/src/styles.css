@@ -240,6 +240,12 @@ body {
   gap: 16px;
 }
 
+.tag-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .tag-filter-title {
   margin: 0;
   color: #8c4e2b;
@@ -254,6 +260,16 @@ body {
   margin: 6px 0 0;
   color: #566173;
   font-size: 0.92rem;
+}
+
+.tag-filter-toggle {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: #8c4e2b;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .tag-filter {
@@ -350,5 +366,10 @@ body {
   .tag-filter-header {
     flex-direction: column;
     align-items: start;
+  }
+
+  .tag-filter-actions {
+    align-items: start;
+    flex-direction: column;
   }
 }

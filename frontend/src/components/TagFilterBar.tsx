@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type TagSummary = {
   name: string;
   item_count: number;
@@ -16,6 +18,7 @@ export function TagFilterBar({
   selectedTag,
   onSelectTag,
 }: TagFilterBarProps) {
+  const [showAllTags, setShowAllTags] = useState(false);
   const selectedTagSummary =
     selectedTag === null
       ? null
@@ -23,14 +26,14 @@ export function TagFilterBar({
           name: selectedTag,
           item_count: 0,
         };
-  const visibleTags = tags.slice(0, defaultVisibleTagCount);
+  const visibleTags = showAllTags ? tags : tags.slice(0, defaultVisibleTagCount);
   const shouldIncludeSelectedTag =
     selectedTagSummary !== null &&
     !visibleTags.some((tag) => tag.name === selectedTagSummary.name);
   const displayedTags = shouldIncludeSelectedTag
     ? [...visibleTags, selectedTagSummary]
     : visibleTags;
-  const hiddenTagCount = Math.max(tags.length - visibleTags.length, 0);
+  const canExpandTags = tags.length > defaultVisibleTagCount;
 
   return (
     <div className="tag-filter-section">
@@ -44,10 +47,21 @@ export function TagFilterBar({
               : " / 現在: すべて"}
           </p>
         </div>
-        {hiddenTagCount > 0 ? (
-          <span className="tag-filter-overflow">
-            上位 {displayedTags.length} 件を表示中
-          </span>
+        {canExpandTags ? (
+          <div className="tag-filter-actions">
+            <span className="tag-filter-overflow">
+              {showAllTags
+                ? `${displayedTags.length} 件を表示中`
+                : `上位 ${displayedTags.length} 件を表示中`}
+            </span>
+            <button
+              className="tag-filter-toggle"
+              onClick={() => setShowAllTags((current) => !current)}
+              type="button"
+            >
+              {showAllTags ? "たたむ" : "もっと見る"}
+            </button>
+          </div>
         ) : null}
       </div>
 

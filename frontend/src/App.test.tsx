@@ -342,4 +342,18 @@ describe("App", () => {
     expect(screen.getByText("10 tags available / 現在: #python")).toBeInTheDocument();
     expect(screen.getByText("#python に一致するアイテムはありません。")).toBeInTheDocument();
   });
+
+  it("expands the tag list when more tags are requested", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await screen.findByText("10 tags available / 現在: すべて");
+    expect(screen.queryByRole("button", { name: "#python (1)" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "もっと見る" }));
+
+    expect(screen.getByRole("button", { name: "#python (1)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "#sqlalchemy (1)" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "たたむ" })).toBeInTheDocument();
+  });
 });
