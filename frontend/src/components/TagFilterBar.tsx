@@ -14,6 +14,40 @@ type TagFilterBarProps = {
 const defaultVisibleTagCount = 8;
 type TagSortKey = "popular" | "name";
 
+function sortTags(tags: TagSummary[], sortKey: TagSortKey) {
+  if (sortKey === "name") {
+    return [...tags].sort((left, right) => left.name.localeCompare(right.name, "ja"));
+  }
+
+  return tags;
+}
+
+function buildDisplayedTags(
+  tags: TagSummary[],
+  selectedTag: string | null,
+  showAllTags: boolean,
+) {
+  const selectedTagSummary =
+    selectedTag === null
+      ? null
+      : tags.find((tag) => tag.name === selectedTag) ?? {
+          name: selectedTag,
+          item_count: 0,
+        };
+  const baseTags = showAllTags ? tags : tags.slice(0, defaultVisibleTagCount);
+  const includesSelectedTag =
+    selectedTagSummary !== null &&
+    baseTags.some((tag) => tag.name === selectedTagSummary.name);
+
+  return {
+    displayedTags:
+      selectedTagSummary !== null && !includesSelectedTag
+        ? [...baseTags, selectedTagSummary]
+        : baseTags,
+    selectedTagSummary,
+  };
+}
+
 export function TagFilterBar({
   tags,
   selectedTag,
@@ -21,29 +55,11 @@ export function TagFilterBar({
 }: TagFilterBarProps) {
   const [showAllTags, setShowAllTags] = useState(false);
   const [sortKey, setSortKey] = useState<TagSortKey>("popular");
-  const sortedTags = useMemo(() => {
-    if (sortKey === "name") {
-      return [...tags].sort((left, right) => left.name.localeCompare(right.name, "ja"));
-    }
-
-    return tags;
-  }, [sortKey, tags]);
-  const selectedTagSummary =
-    selectedTag === null
-      ? null
-      : sortedTags.find((tag) => tag.name === selectedTag) ?? {
-          name: selectedTag,
-          item_count: 0,
-        };
-  const visibleTags = showAllTags
-    ? sortedTags
-    : sortedTags.slice(0, defaultVisibleTagCount);
-  const shouldIncludeSelectedTag =
-    selectedTagSummary !== null &&
-    !visibleTags.some((tag) => tag.name === selectedTagSummary.name);
-  const displayedTags = shouldIncludeSelectedTag
-    ? [...visibleTags, selectedTagSummary]
-    : visibleTags;
+  const sortedTags = useMemo(() => sortTags(tags, sortKey), [sortKey, tags]);
+  const { displayedTags, selectedTagSummary } = useMemo(
+    () => buildDisplayedTags(sortedTags, selectedTag, showAllTags),
+    [selectedTag, showAllTags, sortedTags],
+  );
   const canExpandTags = tags.length > defaultVisibleTagCount;
 
   return (
@@ -78,7 +94,7 @@ export function TagFilterBar({
 
       <div className="tag-filter-toolbar">
         <label className="tag-filter-sort">
-          <span>並び順</span>
+          <span>タグ並び順</span>
           <select
             aria-label="タグ並び順"
             value={sortKey}

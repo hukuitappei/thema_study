@@ -7,38 +7,37 @@ type AuthSectionProps = {
 };
 
 export function AuthSection({ auth }: AuthSectionProps) {
-
   return (
     <>
       <AuthPanel
-        authMode={auth.authMode}
-        authNotice={auth.authNotice}
-        authenticating={auth.authenticating}
-        handleLogin={auth.handleLogin}
-        handleLogout={auth.handleLogout}
-        handleRegister={auth.handleRegister}
-        loginError={auth.loginError}
-        loginForm={auth.loginForm}
-        registering={auth.registering}
-        registerError={auth.registerError}
-        registerForm={auth.registerForm}
-        setLoginForm={auth.setLoginForm}
-        setRegisterForm={auth.setRegisterForm}
-        user={auth.user}
+        authMode={auth.session.authMode}
+        authNotice={auth.session.authNotice}
+        authenticating={auth.forms.authenticating}
+        handleLogin={auth.forms.handleLogin}
+        handleLogout={auth.session.handleLogout}
+        handleRegister={auth.forms.handleRegister}
+        loginError={auth.forms.loginError}
+        loginForm={auth.forms.loginForm}
+        registering={auth.forms.registering}
+        registerError={auth.forms.registerError}
+        registerForm={auth.forms.registerForm}
+        setLoginForm={auth.forms.setLoginForm}
+        setRegisterForm={auth.forms.setRegisterForm}
+        user={auth.session.user}
       />
 
       <AccountPanel
-        handlePasswordSubmit={auth.handlePasswordSubmit}
-        handleProfileSubmit={auth.handleProfileSubmit}
-        passwordBusy={auth.passwordBusy}
-        passwordError={auth.passwordError}
-        passwordForm={auth.passwordForm}
-        profileBusy={auth.profileBusy}
-        profileError={auth.profileError}
-        profileForm={auth.profileForm}
-        setPasswordForm={auth.setPasswordForm}
-        setProfileForm={auth.setProfileForm}
-        user={auth.user}
+        handlePasswordSubmit={auth.account.handlePasswordSubmit}
+        handleProfileSubmit={auth.account.handleProfileSubmit}
+        passwordBusy={auth.account.passwordBusy}
+        passwordError={auth.account.passwordError}
+        passwordForm={auth.account.passwordForm}
+        profileBusy={auth.account.profileBusy}
+        profileError={auth.account.profileError}
+        profileForm={auth.account.profileForm}
+        setPasswordForm={auth.account.setPasswordForm}
+        setProfileForm={auth.account.setProfileForm}
+        user={auth.session.user}
       />
     </>
   );
