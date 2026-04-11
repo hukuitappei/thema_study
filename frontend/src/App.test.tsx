@@ -356,4 +356,24 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "#sqlalchemy (1)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "たたむ" })).toBeInTheDocument();
   });
+
+  it("sorts tags by name when the sort mode is changed", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await screen.findByText("10 tags available / 現在: すべて");
+    await user.selectOptions(screen.getByLabelText("タグ並び順"), "name");
+
+    const tagButtons = screen
+      .getAllByRole("button")
+      .map((button) => button.textContent)
+      .filter((text): text is string => text?.startsWith("#") ?? false);
+
+    expect(tagButtons.slice(0, 4)).toEqual([
+      "#archive (6)",
+      "#auth (1)",
+      "#backend (1)",
+      "#design (1)",
+    ]);
+  });
 });

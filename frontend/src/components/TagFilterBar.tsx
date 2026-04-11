@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type TagSummary = {
   name: string;
@@ -12,6 +12,7 @@ type TagFilterBarProps = {
 };
 
 const defaultVisibleTagCount = 8;
+type TagSortKey = "popular" | "name";
 
 export function TagFilterBar({
   tags,
@@ -19,14 +20,24 @@ export function TagFilterBar({
   onSelectTag,
 }: TagFilterBarProps) {
   const [showAllTags, setShowAllTags] = useState(false);
+  const [sortKey, setSortKey] = useState<TagSortKey>("popular");
+  const sortedTags = useMemo(() => {
+    if (sortKey === "name") {
+      return [...tags].sort((left, right) => left.name.localeCompare(right.name, "ja"));
+    }
+
+    return tags;
+  }, [sortKey, tags]);
   const selectedTagSummary =
     selectedTag === null
       ? null
-      : tags.find((tag) => tag.name === selectedTag) ?? {
+      : sortedTags.find((tag) => tag.name === selectedTag) ?? {
           name: selectedTag,
           item_count: 0,
         };
-  const visibleTags = showAllTags ? tags : tags.slice(0, defaultVisibleTagCount);
+  const visibleTags = showAllTags
+    ? sortedTags
+    : sortedTags.slice(0, defaultVisibleTagCount);
   const shouldIncludeSelectedTag =
     selectedTagSummary !== null &&
     !visibleTags.some((tag) => tag.name === selectedTagSummary.name);
@@ -63,6 +74,20 @@ export function TagFilterBar({
             </button>
           </div>
         ) : null}
+      </div>
+
+      <div className="tag-filter-toolbar">
+        <label className="tag-filter-sort">
+          <span>並び順</span>
+          <select
+            aria-label="タグ並び順"
+            value={sortKey}
+            onChange={(event) => setSortKey(event.target.value as TagSortKey)}
+          >
+            <option value="popular">人気順</option>
+            <option value="name">名前順</option>
+          </select>
+        </label>
       </div>
 
       <div className="tag-filter-bar" aria-label="タグ絞り込み">

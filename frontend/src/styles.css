@@ -246,6 +246,31 @@ body {
   gap: 12px;
 }
 
+.tag-filter-toolbar {
+  margin-top: 12px;
+}
+
+.tag-filter-sort {
+  display: inline-grid;
+  gap: 6px;
+}
+
+.tag-filter-sort span {
+  color: #566173;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.tag-filter-sort select {
+  min-width: 120px;
+  padding: 8px 12px;
+  border: 1px solid rgba(16, 35, 58, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #10233a;
+  font: inherit;
+}
+
 .tag-filter-title {
   margin: 0;
   color: #8c4e2b;

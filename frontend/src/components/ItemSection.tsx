@@ -6,12 +6,11 @@ import { useItemsController } from "../hooks/useItemsController";
 type UserProfile = components["schemas"]["UserProfile"];
 
 type ItemSectionProps = {
-  currentUsername: string | null;
   user: UserProfile | null;
 };
 
-export function ItemSection({ currentUsername, user }: ItemSectionProps) {
-  const itemState = useItemsController(currentUsername);
+export function ItemSection({ user }: ItemSectionProps) {
+  const itemState = useItemsController(user?.username ?? null);
 
   return (
     <>

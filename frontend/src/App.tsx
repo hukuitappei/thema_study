@@ -17,10 +17,7 @@ export default function App() {
       </section>
 
       <AuthSection auth={auth} />
-      <ItemSection
-        currentUsername={auth.user?.username ?? null}
-        user={auth.user}
-      />
+      <ItemSection user={auth.user} />
     </main>
   );
 }
