@@ -226,7 +226,34 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 14px;
+}
+
+.tag-filter-section {
   margin-top: 20px;
+}
+
+.tag-filter-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.tag-filter-title {
+  margin: 0;
+  color: #8c4e2b;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.tag-filter-caption,
+.tag-filter-overflow,
+.list-summary {
+  margin: 6px 0 0;
+  color: #566173;
+  font-size: 0.92rem;
 }
 
 .tag-filter {
@@ -318,5 +345,10 @@ body {
   .pagination-bar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .tag-filter-header {
+    flex-direction: column;
+    align-items: start;
   }
 }

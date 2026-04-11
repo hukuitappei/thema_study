@@ -62,6 +62,12 @@ export function ItemListPanel({
         </span>
       </header>
 
+      <p className="list-summary">
+        {selectedTag
+          ? `#${selectedTag} で ${visibleItems.length} 件を表示中`
+          : `全 ${visibleItems.length} 件を表示中`}
+      </p>
+
       <TagFilterBar
         tags={tags}
         selectedTag={selectedTag}

@@ -46,9 +46,16 @@ vi.mock("./lib/api", () => ({
     }),
     listTags: vi.fn().mockResolvedValue({
       tags: [
+        { name: "archive", item_count: 6 },
         { name: "fastapi", item_count: 1 },
         { name: "react", item_count: 1 },
         { name: "backend", item_count: 1 },
+        { name: "design", item_count: 1 },
+        { name: "testing", item_count: 1 },
+        { name: "auth", item_count: 1 },
+        { name: "typescript", item_count: 1 },
+        { name: "python", item_count: 1 },
+        { name: "sqlalchemy", item_count: 1 },
       ],
     }),
     listItems: vi.fn().mockResolvedValue({
@@ -178,6 +185,11 @@ describe("App", () => {
       expect(
         screen.getByRole("button", { name: "#fastapi (1)" }),
       ).toBeInTheDocument();
+      expect(screen.getByText("10 tags available / 現在: すべて")).toBeInTheDocument();
+      expect(screen.getByText("上位 8 件を表示中")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "#python (1)" }),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -317,5 +329,17 @@ describe("App", () => {
       expect(screen.queryByText("Older item 1")).not.toBeInTheDocument();
     });
     expect(window.location.search).toContain("tag=react");
+  });
+
+  it("keeps the selected tag visible even when it is outside the default top tags", async () => {
+    window.localStorage.setItem("thema_auth_token", "dev-access-token");
+    window.history.replaceState({}, "", "/?tag=python");
+
+    render(<App />);
+
+    await screen.findByText("10 tags available / 現在: #python");
+    expect(screen.getByRole("button", { name: "#python (1)" })).toBeInTheDocument();
+    expect(screen.getByText("10 tags available / 現在: #python")).toBeInTheDocument();
+    expect(screen.getByText("#python に一致するアイテムはありません。")).toBeInTheDocument();
   });
 });
