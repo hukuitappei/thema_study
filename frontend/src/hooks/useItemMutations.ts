@@ -31,6 +31,7 @@ export function useItemMutations({
 }: UseItemMutationsParams) {
   const [itemNotice, setItemNotice] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     const payload = editor.validateSubmit(event);
@@ -75,7 +76,12 @@ export function useItemMutations({
   }
 
   async function handleDelete(itemId: number) {
+    if (deletingId !== null) {
+      return;
+    }
+
     try {
+      setDeletingId(itemId);
       editor.setItemError(null);
       setItemNotice(null);
       await apiClient.deleteItem(itemId);
@@ -90,10 +96,13 @@ export function useItemMutations({
       const message =
         cause instanceof Error ? cause.message : uiCopy.items.mutations.deleteFailed;
       editor.setItemError(message);
+    } finally {
+      setDeletingId(null);
     }
   }
 
   return {
+    deletingId,
     handleDelete,
     handleEdit,
     handleSubmit,

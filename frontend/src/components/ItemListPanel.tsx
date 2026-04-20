@@ -12,6 +12,7 @@ type UserProfile = components["schemas"]["UserProfile"];
 
 type ItemListPanelProps = {
   currentPage: number;
+  deletingId: number | null;
   handleDelete: (itemId: number) => Promise<void>;
   handleEdit: (item: Item) => void;
   handleOwnershipFilterChange: (value: OwnershipFilterKey) => void;
@@ -57,6 +58,7 @@ function getEmptyStateMessage(
 
 export function ItemListPanel({
   currentPage,
+  deletingId,
   handleDelete,
   handleEdit,
   handleOwnershipFilterChange,
@@ -116,6 +118,7 @@ export function ItemListPanel({
       />
 
       <ItemCardList
+        deletingId={deletingId}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
         items={paginatedItems}

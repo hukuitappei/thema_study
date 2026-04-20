@@ -6,6 +6,7 @@ type Item = components["schemas"]["ItemRead"];
 type UserProfile = components["schemas"]["UserProfile"];
 
 type ItemCardListProps = {
+  deletingId: number | null;
   handleDelete: (itemId: number) => Promise<void>;
   handleEdit: (item: Item) => void;
   items: Item[];
@@ -13,6 +14,7 @@ type ItemCardListProps = {
 };
 
 export function ItemCardList({
+  deletingId,
   handleDelete,
   handleEdit,
   items,
@@ -53,6 +55,7 @@ export function ItemCardList({
               </button>
               <button
                 className="danger-button"
+                disabled={deletingId === item.id}
                 onClick={() => void handleDelete(item.id)}
                 type="button"
               >

@@ -50,6 +50,7 @@ export function useItemsController(currentUsername: string | null) {
     },
     list: {
       currentPage: filters.currentPage,
+      deletingId: mutations.deletingId,
       handleDelete: mutations.handleDelete,
       handleEdit: mutations.handleEdit,
       handleOwnershipFilterChange: filters.handleOwnershipFilterChange,

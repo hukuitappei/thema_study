@@ -37,6 +37,7 @@ export function ItemSection({ user }: ItemSectionProps) {
 
       <ItemListPanel
         currentPage={itemState.list.currentPage}
+        deletingId={itemState.list.deletingId}
         handleDelete={itemState.list.handleDelete}
         handleEdit={itemState.list.handleEdit}
         handleOwnershipFilterChange={itemState.list.handleOwnershipFilterChange}
