@@ -1,5 +1,6 @@
 import type { Dispatch, FormEvent, SetStateAction } from "react";
 import type { components } from "../generated/schema";
+import { uiCopy } from "../lib/ui-copy";
 
 type LoginRequest = components["schemas"]["LoginRequest"];
 type RegisterRequest = components["schemas"]["RegisterRequest"];
@@ -40,20 +41,21 @@ export function AuthPanel({
   setRegisterForm,
   user,
 }: AuthPanelProps) {
+  const statusLabel =
+    authMode === "checking"
+      ? uiCopy.auth.status.checking
+      : authMode === "authenticated"
+        ? uiCopy.auth.status.authenticated
+        : uiCopy.auth.status.anonymous;
+
   return (
     <section className="panel">
       <header className="panel-header">
-        <h2>認証</h2>
-        <span>
-          {authMode === "checking"
-            ? "セッション確認中"
-            : authMode === "authenticated"
-              ? "認証済み"
-              : "未認証"}
-        </span>
+        <h2>{uiCopy.auth.heading}</h2>
+        <span>{statusLabel}</span>
         {user ? (
           <button className="ghost-button" onClick={handleLogout} type="button">
-            ログアウト
+            {uiCopy.auth.logout}
           </button>
         ) : null}
       </header>
@@ -65,14 +67,14 @@ export function AuthPanel({
       {user ? (
         <div className="auth-summary">
           <strong>{user.display_name}</strong>
-          <p>@{user.username} としてアイテム操作が可能です。</p>
+          <p>{uiCopy.auth.summary(user.username)}</p>
         </div>
       ) : (
         <div className="auth-grid">
           <form className="item-form" onSubmit={handleLogin} noValidate>
-            <h3>ログイン</h3>
+            <h3>{uiCopy.auth.login.title}</h3>
             <label>
-              <span>ユーザー名</span>
+              <span>{uiCopy.auth.login.username}</span>
               <input
                 autoComplete="username"
                 minLength={3}
@@ -86,7 +88,7 @@ export function AuthPanel({
               />
             </label>
             <label>
-              <span>パスワード</span>
+              <span>{uiCopy.auth.login.password}</span>
               <input
                 autoComplete="current-password"
                 type="password"
@@ -110,14 +112,16 @@ export function AuthPanel({
               disabled={authenticating}
               type="submit"
             >
-              {authenticating ? "ログイン中..." : "ログイン"}
+              {authenticating
+                ? uiCopy.auth.login.submitting
+                : uiCopy.auth.login.submit}
             </button>
           </form>
 
           <form className="item-form" onSubmit={handleRegister} noValidate>
-            <h3>ユーザー登録</h3>
+            <h3>{uiCopy.auth.register.title}</h3>
             <label>
-              <span>表示名</span>
+              <span>{uiCopy.auth.register.displayName}</span>
               <input
                 autoComplete="name"
                 maxLength={64}
@@ -131,7 +135,7 @@ export function AuthPanel({
               />
             </label>
             <label>
-              <span>ユーザー名</span>
+              <span>{uiCopy.auth.register.username}</span>
               <input
                 autoComplete="username"
                 maxLength={32}
@@ -145,7 +149,7 @@ export function AuthPanel({
               />
             </label>
             <label>
-              <span>パスワード</span>
+              <span>{uiCopy.auth.register.password}</span>
               <input
                 autoComplete="new-password"
                 type="password"
@@ -166,7 +170,9 @@ export function AuthPanel({
               </p>
             ) : null}
             <button className="ghost-button" disabled={registering} type="submit">
-              {registering ? "登録中..." : "ユーザー登録"}
+              {registering
+                ? uiCopy.auth.register.submitting
+                : uiCopy.auth.register.submit}
             </button>
           </form>
         </div>

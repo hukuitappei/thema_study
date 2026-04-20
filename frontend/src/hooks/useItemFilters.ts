@@ -5,20 +5,21 @@ import {
   type ItemSortKey,
   type OwnershipFilterKey,
 } from "../lib/item-utils";
+import { uiCopy } from "../lib/ui-copy";
 
 type Item = components["schemas"]["ItemRead"];
 
 export const itemsPerPage = 6;
 
 export const itemSortOptions: Record<ItemSortKey, string> = {
-  newest: "新しい順",
-  oldest: "古い順",
-  title: "タイトル順",
+  newest: uiCopy.items.list.sortOptions.newest,
+  oldest: uiCopy.items.list.sortOptions.oldest,
+  title: uiCopy.items.list.sortOptions.title,
 };
 
 export const ownershipFilterOptions: Record<OwnershipFilterKey, string> = {
-  all: "全体",
-  mine: "自分のアイテム",
+  all: uiCopy.items.list.ownershipOptions.all,
+  mine: uiCopy.items.list.ownershipOptions.mine,
 };
 
 function readSelectedTagFromLocation() {

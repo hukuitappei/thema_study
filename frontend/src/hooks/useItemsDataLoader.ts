@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { components } from "../generated/schema";
 import { apiClient } from "../lib/api";
+import { uiCopy } from "../lib/ui-copy";
 
 type HealthResponse = components["schemas"]["HealthResponse"];
 type Item = components["schemas"]["ItemRead"];
@@ -39,8 +40,8 @@ export function useItemsDataLoader() {
         }
 
         const message =
-          cause instanceof Error ? cause.message : "読み込みに失敗しました。";
-        setPageError(`初期化エラー: ${message}`);
+          cause instanceof Error ? cause.message : uiCopy.items.status.loadFailed;
+        setPageError(uiCopy.items.status.pageError(message));
       } finally {
         if (active) {
           setLoading(false);

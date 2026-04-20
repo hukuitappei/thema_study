@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import type { components } from "../generated/schema";
 import { apiClient } from "../lib/api";
+import { uiCopy } from "../lib/ui-copy";
 import { persistAccessToken } from "./useAuthSession";
 
 type LoginRequest = components["schemas"]["LoginRequest"];
@@ -8,10 +9,6 @@ type RegisterRequest = components["schemas"]["RegisterRequest"];
 type UserProfile = components["schemas"]["UserProfile"];
 
 const usernamePattern = /^[a-zA-Z0-9_]+$/;
-
-function getValidationMessage(field: string, message: string) {
-  return `${field}: ${message}`;
-}
 
 type UseAuthFormsParams = {
   authenticate: (user: UserProfile, token?: string) => void;
@@ -38,10 +35,10 @@ export function useAuthForms({
 
   function validateLoginForm() {
     if (!loginForm.username.trim()) {
-      return "ユーザー名を入力してください。";
+      return uiCopy.auth.validation.loginUsernameRequired;
     }
     if (!loginForm.password) {
-      return "パスワードを入力してください。";
+      return uiCopy.auth.validation.loginPasswordRequired;
     }
     return null;
   }
@@ -52,34 +49,31 @@ export function useAuthForms({
     const password = registerForm.password;
 
     if (!displayName) {
-      return getValidationMessage("表示名", "入力してください。");
+      return uiCopy.auth.validation.displayNameRequired;
     }
     if (displayName.length > 64) {
-      return getValidationMessage("表示名", "64文字以内にしてください。");
+      return uiCopy.auth.validation.displayNameTooLong;
     }
     if (!username) {
-      return getValidationMessage("ユーザー名", "入力してください。");
+      return uiCopy.auth.validation.usernameRequired;
     }
     if (username.length < 3) {
-      return getValidationMessage("ユーザー名", "3文字以上にしてください。");
+      return uiCopy.auth.validation.usernameTooShort;
     }
     if (username.length > 32) {
-      return getValidationMessage("ユーザー名", "32文字以内にしてください。");
+      return uiCopy.auth.validation.usernameTooLong;
     }
     if (!usernamePattern.test(username)) {
-      return getValidationMessage(
-        "ユーザー名",
-        "英数字とアンダースコアのみ使用できます。",
-      );
+      return uiCopy.auth.validation.usernamePattern;
     }
     if (!password) {
-      return getValidationMessage("パスワード", "入力してください。");
+      return uiCopy.auth.validation.passwordRequired;
     }
     if (password.length < 8) {
-      return getValidationMessage("パスワード", "8文字以上にしてください。");
+      return uiCopy.auth.validation.passwordTooShort;
     }
     if (password.length > 128) {
-      return getValidationMessage("パスワード", "128文字以内にしてください。");
+      return uiCopy.auth.validation.passwordTooLong;
     }
     return null;
   }
@@ -103,11 +97,11 @@ export function useAuthForms({
       });
 
       authenticate(response.user, response.access_token);
-      setAuthNotice(`ログインしました: ${response.user.display_name}`);
+      setAuthNotice(uiCopy.auth.notices.loggedIn(response.user.display_name));
     } catch (cause) {
       persistAccessToken(null);
       const message =
-        cause instanceof Error ? cause.message : "ログインに失敗しました。";
+        cause instanceof Error ? cause.message : uiCopy.auth.validation.loginFailed;
       setLoginError(message);
     } finally {
       setAuthenticating(false);
@@ -138,12 +132,10 @@ export function useAuthForms({
         password: registerForm.password,
       });
       setRegisterForm({ username: "", display_name: "", password: "" });
-      setAuthNotice(
-        `${created.display_name} を登録しました。続けてログインしてください。`,
-      );
+      setAuthNotice(uiCopy.auth.notices.registered(created.display_name));
     } catch (cause) {
       const message =
-        cause instanceof Error ? cause.message : "ユーザー登録に失敗しました。";
+        cause instanceof Error ? cause.message : uiCopy.auth.validation.registerFailed;
       setRegisterError(message);
     } finally {
       setRegistering(false);

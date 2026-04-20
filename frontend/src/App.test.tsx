@@ -8,6 +8,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
+import { uiCopy } from "./lib/ui-copy";
 
 const apiMocks = vi.hoisted(() => ({
   createItem: vi.fn(),
@@ -174,19 +175,21 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(screen.getByText("ok")).toBeInTheDocument();
-      expect(screen.getByText("未認証")).toBeInTheDocument();
+      expect(screen.getByText(uiCopy.auth.status.anonymous)).toBeInTheDocument();
       expect(
-        screen.getByRole("heading", { name: "ログイン" }),
+        screen.getByRole("heading", { name: uiCopy.auth.login.title }),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("作成者: Developer Admin (@admin)"),
+        screen.getByText(uiCopy.items.list.card.owner("Developer Admin", "admin")),
       ).toBeInTheDocument();
       expect(screen.getByText("#fastapi")).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "#fastapi (1)" }),
       ).toBeInTheDocument();
-      expect(screen.getByText("10 tags available / 現在: すべて")).toBeInTheDocument();
-      expect(screen.getByText("上位 8 件を表示中")).toBeInTheDocument();
+      expect(
+        screen.getByText(uiCopy.tags.caption(10, null)),
+      ).toBeInTheDocument();
+      expect(screen.getByText(uiCopy.tags.overflow(8, false))).toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: "#python (1)" }),
       ).not.toBeInTheDocument();
@@ -200,15 +203,15 @@ describe("App", () => {
     await screen.findByText("ok");
 
     const authSection = screen
-      .getByRole("heading", { name: "認証" })
+      .getByRole("heading", { name: uiCopy.auth.heading })
       .closest("section");
     expect(authSection).not.toBeNull();
     const auth = within(authSection as HTMLElement);
     const loginForm = auth
-      .getByRole("button", { name: "ログイン" })
+      .getByRole("button", { name: uiCopy.auth.login.submit })
       .closest("form");
     const registerForm = auth
-      .getByRole("button", { name: "ユーザー登録" })
+      .getByRole("button", { name: uiCopy.auth.register.submit })
       .closest("form");
     expect(loginForm).not.toBeNull();
     expect(registerForm).not.toBeNull();
@@ -216,31 +219,33 @@ describe("App", () => {
     const login = within(loginForm as HTMLFormElement);
     const register = within(registerForm as HTMLFormElement);
 
-    await user.clear(login.getByLabelText("ユーザー名"));
-    await user.clear(login.getByLabelText("パスワード"));
-    await user.click(login.getByRole("button", { name: "ログイン" }));
+    await user.clear(login.getByLabelText(uiCopy.auth.login.username));
+    await user.clear(login.getByLabelText(uiCopy.auth.login.password));
+    await user.click(login.getByRole("button", { name: uiCopy.auth.login.submit }));
 
     await waitFor(() => {
       expect(
         screen
           .getAllByRole("alert")
           .some((element) =>
-            element.textContent?.includes("ユーザー名を入力してください。"),
+            element.textContent?.includes(uiCopy.auth.validation.loginUsernameRequired),
           ),
       ).toBe(true);
     });
 
-    await user.type(register.getByLabelText("表示名"), "New User");
-    await user.type(register.getByLabelText("ユーザー名"), "ab");
-    await user.type(register.getByLabelText("パスワード"), "secret123");
-    await user.click(register.getByRole("button", { name: "ユーザー登録" }));
+    await user.type(register.getByLabelText(uiCopy.auth.register.displayName), "New User");
+    await user.type(register.getByLabelText(uiCopy.auth.register.username), "ab");
+    await user.type(register.getByLabelText(uiCopy.auth.register.password), "secret123");
+    await user.click(
+      register.getByRole("button", { name: uiCopy.auth.register.submit }),
+    );
 
     await waitFor(() => {
       expect(
         screen
           .getAllByRole("alert")
           .some((element) =>
-            element.textContent?.includes("ユーザー名: 3文字以上にしてください。"),
+            element.textContent?.includes(uiCopy.auth.validation.usernameTooShort),
           ),
       ).toBe(true);
     });
@@ -264,36 +269,51 @@ describe("App", () => {
     render(<App />);
 
     await screen.findByText("First item");
-    await screen.findByText("認証済み");
+    await screen.findByText(uiCopy.auth.status.authenticated);
 
-    expect(screen.getAllByRole("button", { name: "編集" })).toHaveLength(1);
-    expect(screen.getAllByRole("button", { name: "削除" })).toHaveLength(1);
+    expect(
+      screen.getAllByRole("button", { name: uiCopy.items.list.card.edit }),
+    ).toHaveLength(1);
+    expect(
+      screen.getAllByRole("button", { name: uiCopy.items.list.card.delete }),
+    ).toHaveLength(1);
 
-    await user.selectOptions(screen.getByLabelText("表示範囲"), "mine");
+    await user.selectOptions(
+      screen.getByLabelText(uiCopy.items.list.controls.ownership),
+      "mine",
+    );
     await waitFor(() => {
       expect(screen.getByText("First item")).toBeInTheDocument();
       expect(screen.queryByText("Alpha item")).not.toBeInTheDocument();
     });
 
-    await user.selectOptions(screen.getByLabelText("表示範囲"), "all");
+    await user.selectOptions(
+      screen.getByLabelText(uiCopy.items.list.controls.ownership),
+      "all",
+    );
     await user.click(screen.getByRole("button", { name: "#react (1)" }));
     await waitFor(() => {
       expect(screen.getByText("Alpha item")).toBeInTheDocument();
       expect(screen.queryByText("First item")).not.toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "すべて" }));
-    await user.type(screen.getByLabelText("検索"), "react");
+    await user.click(screen.getByRole("button", { name: uiCopy.tags.all }));
+    await user.type(screen.getByLabelText(uiCopy.items.list.controls.search), "react");
     await waitFor(() => {
       expect(screen.getByText("Alpha item")).toBeInTheDocument();
       expect(screen.queryByText("First item")).not.toBeInTheDocument();
     });
 
-    await user.clear(screen.getByLabelText("検索"));
-    await user.type(screen.getByLabelText("タイトル"), "Created item");
-    await user.type(screen.getByLabelText("説明"), "With tags");
-    await user.type(screen.getByLabelText("タグ"), "API, FastAPI, api");
-    await user.click(screen.getByRole("button", { name: "追加する" }));
+    await user.clear(screen.getByLabelText(uiCopy.items.list.controls.search));
+    await user.type(screen.getByLabelText(uiCopy.items.editor.title), "Created item");
+    await user.type(
+      screen.getByLabelText(uiCopy.items.editor.description),
+      "With tags",
+    );
+    await user.type(screen.getByLabelText(uiCopy.items.editor.tags), "API, FastAPI, api");
+    await user.click(
+      screen.getByRole("button", { name: uiCopy.items.editor.createSubmit }),
+    );
 
     await waitFor(() => {
       expect(apiMocks.createItem).toHaveBeenCalledWith({
@@ -317,7 +337,9 @@ describe("App", () => {
     expect(window.location.search).toContain("sort=oldest");
     expect(window.location.search).toContain("page=2");
 
-    await user.click(screen.getByRole("button", { name: "Previous" }));
+    await user.click(
+      screen.getByRole("button", { name: uiCopy.items.list.pagination.previous }),
+    );
     await waitFor(() => {
       expect(screen.getByText("Older item 1")).toBeInTheDocument();
     });
@@ -337,32 +359,34 @@ describe("App", () => {
 
     render(<App />);
 
-    await screen.findByText("10 tags available / 現在: #python");
+    await screen.findByText(uiCopy.tags.caption(10, "python"));
     expect(screen.getByRole("button", { name: "#python (1)" })).toBeInTheDocument();
-    expect(screen.getByText("10 tags available / 現在: #python")).toBeInTheDocument();
-    expect(screen.getByText("#python に一致するアイテムはありません。")).toBeInTheDocument();
+    expect(screen.getByText(uiCopy.tags.caption(10, "python"))).toBeInTheDocument();
+    expect(
+      screen.getByText(uiCopy.items.list.emptyByTag("python")),
+    ).toBeInTheDocument();
   });
 
   it("expands the tag list when more tags are requested", async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await screen.findByText("10 tags available / 現在: すべて");
+    await screen.findByText(uiCopy.tags.caption(10, null));
     expect(screen.queryByRole("button", { name: "#python (1)" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "もっと見る" }));
+    await user.click(screen.getByRole("button", { name: uiCopy.tags.more }));
 
     expect(screen.getByRole("button", { name: "#python (1)" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "#sqlalchemy (1)" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "たたむ" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: uiCopy.tags.less })).toBeInTheDocument();
   });
 
   it("sorts tags by name when the sort mode is changed", async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    await screen.findByText("10 tags available / 現在: すべて");
-    await user.selectOptions(screen.getByLabelText("タグ並び順"), "name");
+    await screen.findByText(uiCopy.tags.caption(10, null));
+    await user.selectOptions(screen.getByLabelText(uiCopy.tags.sortLabel), "name");
 
     const tagButtons = screen
       .getAllByRole("button")

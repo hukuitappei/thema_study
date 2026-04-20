@@ -1,5 +1,6 @@
 import type { Dispatch, FormEvent, SetStateAction } from "react";
 import type { components } from "../generated/schema";
+import { uiCopy } from "../lib/ui-copy";
 
 type PasswordChangeRequest = components["schemas"]["PasswordChangeRequest"];
 type UserProfile = components["schemas"]["UserProfile"];
@@ -39,13 +40,13 @@ export function AccountPanel({
   return (
     <section className="panel">
       <header className="panel-header">
-        <h2>アカウント設定</h2>
+        <h2>{uiCopy.account.heading}</h2>
       </header>
       <div className="auth-grid">
         <form className="item-form" onSubmit={handleProfileSubmit} noValidate>
-          <h3>プロフィール更新</h3>
+          <h3>{uiCopy.account.profileTitle}</h3>
           <label>
-            <span>表示名</span>
+            <span>{uiCopy.account.displayName}</span>
             <input
               maxLength={64}
               value={profileForm.display_name}
@@ -60,14 +61,16 @@ export function AccountPanel({
             </p>
           ) : null}
           <button className="ghost-button" disabled={profileBusy} type="submit">
-            {profileBusy ? "更新中..." : "プロフィール更新"}
+            {profileBusy
+              ? uiCopy.account.profileSubmitting
+              : uiCopy.account.profileSubmit}
           </button>
         </form>
 
         <form className="item-form" onSubmit={handlePasswordSubmit} noValidate>
-          <h3>パスワード変更</h3>
+          <h3>{uiCopy.account.passwordTitle}</h3>
           <label>
-            <span>現在のパスワード</span>
+            <span>{uiCopy.account.currentPassword}</span>
             <input
               autoComplete="current-password"
               type="password"
@@ -83,7 +86,7 @@ export function AccountPanel({
             />
           </label>
           <label>
-            <span>新しいパスワード</span>
+            <span>{uiCopy.account.newPassword}</span>
             <input
               autoComplete="new-password"
               type="password"
@@ -104,7 +107,9 @@ export function AccountPanel({
             </p>
           ) : null}
           <button className="ghost-button" disabled={passwordBusy} type="submit">
-            {passwordBusy ? "変更中..." : "パスワード変更"}
+            {passwordBusy
+              ? uiCopy.account.passwordSubmitting
+              : uiCopy.account.passwordSubmit}
           </button>
         </form>
       </div>

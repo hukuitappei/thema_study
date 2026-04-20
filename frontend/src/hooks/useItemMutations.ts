@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import type { components } from "../generated/schema";
 import { apiClient } from "../lib/api";
+import { uiCopy } from "../lib/ui-copy";
 
 type Item = components["schemas"]["ItemRead"];
 type ItemCreate = components["schemas"]["ItemCreate"];
@@ -46,11 +47,11 @@ export function useItemMutations({
       if (editor.editingId === null) {
         const created = await apiClient.createItem(payload);
         nextItems = [created, ...items];
-        setItemNotice("アイテムを追加しました。");
+        setItemNotice(uiCopy.items.mutations.created);
       } else {
         const updated = await apiClient.updateItem(editor.editingId, payload);
         nextItems = items.map((item) => (item.id === updated.id ? updated : item));
-        setItemNotice("アイテムを更新しました。");
+        setItemNotice(uiCopy.items.mutations.updated);
       }
 
       setItems(nextItems);
@@ -58,7 +59,9 @@ export function useItemMutations({
       editor.resetForm();
     } catch (cause) {
       const message =
-        cause instanceof Error ? cause.message : "アイテム操作に失敗しました。";
+        cause instanceof Error
+          ? cause.message
+          : uiCopy.items.mutations.createOrUpdateFailed;
       editor.setItemError(message);
     } finally {
       setSubmitting(false);
@@ -82,10 +85,10 @@ export function useItemMutations({
         editor.resetForm();
       }
       syncTagsWithItems(nextItems);
-      setItemNotice("アイテムを削除しました。");
+      setItemNotice(uiCopy.items.mutations.deleted);
     } catch (cause) {
       const message =
-        cause instanceof Error ? cause.message : "アイテム削除に失敗しました。";
+        cause instanceof Error ? cause.message : uiCopy.items.mutations.deleteFailed;
       editor.setItemError(message);
     }
   }

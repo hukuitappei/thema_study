@@ -92,4 +92,7 @@ THEMA_DATABASE_URL=sqlite:///backend/data/app.db
 
 ## 補足
 
-- 既知制約と今後の候補は `docs/remaining-tasks.md` にまとめています。
+- 既知制約と次の候補は `docs/remaining-tasks.md` にまとめています。
+- OneDrive 配下の作業フォルダでは `frontend` の `npm run build` が `spawn EPERM` で失敗することがあります。
+- 同一コードを `C:\Users\btsi1\デスクトップ\cursor\thema_typescrypt_buildcheck` に置いた検証用ワークツリーでは build 成功を確認済みです。
+- `frontend/src/lib/ui-copy.ts` に UI 文言を集約し、`App.test.tsx` も同じ定数を参照して文言差分を抑えています。

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { components } from "../generated/schema";
 import { apiClient, setAccessToken } from "../lib/api";
+import { uiCopy } from "../lib/ui-copy";
 
 type UserProfile = components["schemas"]["UserProfile"];
 
@@ -46,7 +47,7 @@ export function useAuthSession() {
 
         setUser(me);
         setAuthMode("authenticated");
-        setAuthNotice(`ログイン中: ${me.display_name}`);
+        setAuthNotice(uiCopy.auth.notices.restored(me.display_name));
       } catch {
         persistAccessToken(null);
         if (!active) {
@@ -55,9 +56,7 @@ export function useAuthSession() {
 
         setUser(null);
         setAuthMode("anonymous");
-        setAuthNotice(
-          "保存されていたセッションは無効でした。再度ログインしてください。",
-        );
+        setAuthNotice(uiCopy.auth.notices.sessionExpired);
       }
     }
 

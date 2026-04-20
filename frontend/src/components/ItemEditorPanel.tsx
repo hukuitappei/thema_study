@@ -1,5 +1,6 @@
 import type { Dispatch, FormEvent, SetStateAction } from "react";
 import type { components } from "../generated/schema";
+import { uiCopy } from "../lib/ui-copy";
 
 type ItemCreate = components["schemas"]["ItemCreate"];
 type UserProfile = components["schemas"]["UserProfile"];
@@ -34,31 +35,35 @@ export function ItemEditorPanel({
   return (
     <section className="panel">
       <header className="panel-header">
-        <h2>{editingId === null ? "アイテム追加" : "アイテム編集"}</h2>
+        <h2>
+          {editingId === null
+            ? uiCopy.items.editor.createHeading
+            : uiCopy.items.editor.editHeading}
+        </h2>
         {editingId !== null ? (
           <button className="ghost-button" onClick={resetForm} type="button">
-            キャンセル
+            {uiCopy.items.editor.cancel}
           </button>
         ) : null}
       </header>
       {user ? (
         <form className="item-form" onSubmit={handleSubmit} noValidate>
           <label>
-            <span>タイトル</span>
+            <span>{uiCopy.items.editor.title}</span>
             <input
-              aria-label="タイトル"
+              aria-label={uiCopy.items.editor.title}
               maxLength={120}
               value={form.title}
               onChange={(event) =>
                 setForm((current) => ({ ...current, title: event.target.value }))
               }
-              placeholder="例: API contract を更新する"
+              placeholder={uiCopy.items.editor.titlePlaceholder}
             />
           </label>
           <label>
-            <span>説明</span>
+            <span>{uiCopy.items.editor.description}</span>
             <textarea
-              aria-label="説明"
+              aria-label={uiCopy.items.editor.description}
               rows={4}
               value={form.description ?? ""}
               onChange={(event) =>
@@ -67,16 +72,16 @@ export function ItemEditorPanel({
                   description: event.target.value,
                 }))
               }
-              placeholder="背景や対応内容をメモする"
+              placeholder={uiCopy.items.editor.descriptionPlaceholder}
             />
           </label>
           <label>
-            <span>タグ</span>
+            <span>{uiCopy.items.editor.tags}</span>
             <input
-              aria-label="タグ"
+              aria-label={uiCopy.items.editor.tags}
               value={tagInput}
               onChange={(event) => setTagInput(event.target.value)}
-              placeholder="例: api, fastapi, auth"
+              placeholder={uiCopy.items.editor.tagsPlaceholder}
             />
           </label>
           {itemError ? (
@@ -90,11 +95,15 @@ export function ItemEditorPanel({
             </p>
           ) : null}
           <button className="primary-button" disabled={submitting} type="submit">
-            {submitting ? "送信中..." : editingId === null ? "追加する" : "更新する"}
+            {submitting
+              ? uiCopy.items.editor.submitting
+              : editingId === null
+                ? uiCopy.items.editor.createSubmit
+                : uiCopy.items.editor.editSubmit}
           </button>
         </form>
       ) : (
-        <p>アイテムの追加・編集・削除にはログインが必要です。</p>
+        <p>{uiCopy.items.editor.authRequired}</p>
       )}
     </section>
   );

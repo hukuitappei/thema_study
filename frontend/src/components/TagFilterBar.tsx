@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { uiCopy } from "../lib/ui-copy";
 
 type TagSummary = {
   name: string;
@@ -66,27 +67,22 @@ export function TagFilterBar({
     <div className="tag-filter-section">
       <div className="tag-filter-header">
         <div>
-          <p className="tag-filter-title">人気タグ</p>
+          <p className="tag-filter-title">{uiCopy.tags.title}</p>
           <p className="tag-filter-caption">
-            {tags.length} tags available
-            {selectedTagSummary
-              ? ` / 現在: #${selectedTagSummary.name}`
-              : " / 現在: すべて"}
+            {uiCopy.tags.caption(tags.length, selectedTagSummary?.name ?? null)}
           </p>
         </div>
         {canExpandTags ? (
           <div className="tag-filter-actions">
             <span className="tag-filter-overflow">
-              {showAllTags
-                ? `${displayedTags.length} 件を表示中`
-                : `上位 ${displayedTags.length} 件を表示中`}
+              {uiCopy.tags.overflow(displayedTags.length, showAllTags)}
             </span>
             <button
               className="tag-filter-toggle"
               onClick={() => setShowAllTags((current) => !current)}
               type="button"
             >
-              {showAllTags ? "たたむ" : "もっと見る"}
+              {showAllTags ? uiCopy.tags.less : uiCopy.tags.more}
             </button>
           </div>
         ) : null}
@@ -94,25 +90,25 @@ export function TagFilterBar({
 
       <div className="tag-filter-toolbar">
         <label className="tag-filter-sort">
-          <span>タグ並び順</span>
+          <span>{uiCopy.tags.sortLabel}</span>
           <select
-            aria-label="タグ並び順"
+            aria-label={uiCopy.tags.sortLabel}
             value={sortKey}
             onChange={(event) => setSortKey(event.target.value as TagSortKey)}
           >
-            <option value="popular">人気順</option>
-            <option value="name">名前順</option>
+            <option value="popular">{uiCopy.tags.sortPopular}</option>
+            <option value="name">{uiCopy.tags.sortName}</option>
           </select>
         </label>
       </div>
 
-      <div className="tag-filter-bar" aria-label="タグ絞り込み">
+      <div className="tag-filter-bar" aria-label={uiCopy.tags.ariaLabel}>
         <button
           className={selectedTag === null ? "tag-filter active" : "tag-filter"}
           onClick={() => onSelectTag(null)}
           type="button"
         >
-          すべて
+          {uiCopy.tags.all}
         </button>
         {displayedTags.map((tag) => (
           <button

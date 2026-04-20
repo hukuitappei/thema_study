@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { components } from "../generated/schema";
 import { apiClient } from "../lib/api";
+import { uiCopy } from "../lib/ui-copy";
 
 type PasswordChangeRequest = components["schemas"]["PasswordChangeRequest"];
 type UserProfile = components["schemas"]["UserProfile"];
@@ -40,13 +41,13 @@ export function useAccountSettings({
 
   function handleLogout() {
     setPasswordForm({ current_password: "", new_password: "" });
-    clearSession("ログアウトしました。");
+    clearSession(uiCopy.auth.notices.loggedOut);
   }
 
   async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!profileForm.display_name.trim()) {
-      setProfileError("表示名を入力してください。");
+      setProfileError(uiCopy.account.validation.displayNameRequired);
       return;
     }
 
@@ -58,10 +59,10 @@ export function useAccountSettings({
       });
       setUser(updated);
       setProfileForm({ display_name: updated.display_name });
-      setAuthNotice(`プロフィールを更新しました: ${updated.display_name}`);
+      setAuthNotice(uiCopy.account.notices.profileUpdated(updated.display_name));
     } catch (cause) {
       const message =
-        cause instanceof Error ? cause.message : "プロフィール更新に失敗しました。";
+        cause instanceof Error ? cause.message : uiCopy.account.validation.profileFailed;
       setProfileError(message);
     } finally {
       setProfileBusy(false);
@@ -71,7 +72,7 @@ export function useAccountSettings({
   async function handlePasswordSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!passwordForm.current_password || !passwordForm.new_password) {
-      setPasswordError("現在のパスワードと新しいパスワードを入力してください。");
+      setPasswordError(uiCopy.account.validation.passwordRequired);
       return;
     }
 
@@ -80,10 +81,10 @@ export function useAccountSettings({
       setPasswordError(null);
       await apiClient.changePassword(passwordForm);
       setPasswordForm({ current_password: "", new_password: "" });
-      clearSession("パスワードを変更しました。再度ログインしてください。");
+      clearSession(uiCopy.account.notices.passwordChanged);
     } catch (cause) {
       const message =
-        cause instanceof Error ? cause.message : "パスワード変更に失敗しました。";
+        cause instanceof Error ? cause.message : uiCopy.account.validation.passwordFailed;
       setPasswordError(message);
     } finally {
       setPasswordBusy(false);

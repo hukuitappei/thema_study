@@ -1,6 +1,10 @@
+import { ItemCardList } from "./ItemCardList";
+import { ItemListControls } from "./ItemListControls";
+import { ItemPaginationBar } from "./ItemPaginationBar";
 import { TagFilterBar } from "./TagFilterBar";
-import { formatItemDate, type ItemSortKey, type OwnershipFilterKey } from "../lib/item-utils";
+import type { ItemSortKey, OwnershipFilterKey } from "../lib/item-utils";
 import type { components } from "../generated/schema";
+import { uiCopy } from "../lib/ui-copy";
 
 type Item = components["schemas"]["ItemRead"];
 type TagSummary = components["schemas"]["TagSummary"];
@@ -30,6 +34,27 @@ type ItemListPanelProps = {
   visibleItems: Item[];
 };
 
+function getListSummary(selectedTag: string | null, visibleCount: number) {
+  return selectedTag
+    ? uiCopy.items.list.summaryTag(selectedTag, visibleCount)
+    : uiCopy.items.list.summaryAll(visibleCount);
+}
+
+function getEmptyStateMessage(
+  selectedTag: string | null,
+  ownershipFilter: OwnershipFilterKey,
+) {
+  if (selectedTag) {
+    return uiCopy.items.list.emptyByTag(selectedTag);
+  }
+
+  if (ownershipFilter === "mine") {
+    return uiCopy.items.list.emptyMine;
+  }
+
+  return uiCopy.items.list.emptyAll;
+}
+
 export function ItemListPanel({
   currentPage,
   handleDelete,
@@ -56,17 +81,11 @@ export function ItemListPanel({
   return (
     <section className="panel">
       <header className="panel-header">
-        <h2>サンプルデータ</h2>
-        <span>
-          {visibleItems.length} items / Page {currentPage} of {totalPages}
-        </span>
+        <h2>{uiCopy.items.list.heading}</h2>
+        <span>{uiCopy.items.list.headerPage(currentPage, totalPages)}</span>
       </header>
 
-      <p className="list-summary">
-        {selectedTag
-          ? `#${selectedTag} で ${visibleItems.length} 件を表示中`
-          : `全 ${visibleItems.length} 件を表示中`}
-      </p>
+      <p className="list-summary">{getListSummary(selectedTag, visibleItems.length)}</p>
 
       <TagFilterBar
         tags={tags}
@@ -74,127 +93,38 @@ export function ItemListPanel({
         onSelectTag={handleSelectTag}
       />
 
-      <div className="list-controls">
-        {user ? (
-          <label className="control-field">
-            <span>表示範囲</span>
-            <select
-              aria-label="表示範囲"
-              value={ownershipFilter}
-              onChange={(event) =>
-                handleOwnershipFilterChange(
-                  event.target.value as OwnershipFilterKey,
-                )
-              }
-            >
-              {Object.entries(ownershipFilterOptions).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : null}
-        <label className="control-field">
-          <span>検索</span>
-          <input
-            aria-label="検索"
-            value={searchQuery}
-            onChange={(event) => handleSearchQueryChange(event.target.value)}
-            placeholder="タイトル・説明・タグで絞り込む"
-          />
-        </label>
-        <label className="control-field">
-          <span>並び順</span>
-          <select
-            aria-label="並び順"
-            value={sortKey}
-            onChange={(event) =>
-              handleSortKeyChange(event.target.value as ItemSortKey)
-            }
-          >
-            {Object.entries(itemSortOptions).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      <ItemListControls
+        handleOwnershipFilterChange={handleOwnershipFilterChange}
+        handleSearchQueryChange={handleSearchQueryChange}
+        handleSortKeyChange={handleSortKeyChange}
+        itemSortOptions={itemSortOptions}
+        ownershipFilter={ownershipFilter}
+        ownershipFilterOptions={ownershipFilterOptions}
+        searchQuery={searchQuery}
+        showOwnershipFilter={user !== null}
+        sortKey={sortKey}
+      />
 
-      {visibleItems.length > itemsPerPage ? (
-        <div className="pagination-bar" aria-label="Pagination">
-          <button
-            className="ghost-button"
-            disabled={currentPage === 1}
-            onClick={onPreviousPage}
-            type="button"
-          >
-            Previous
-          </button>
-          <span className="pagination-summary">
-            Showing {paginatedItems.length} of {visibleItems.length} items
-          </span>
-          <button
-            className="ghost-button"
-            disabled={currentPage === totalPages}
-            onClick={onNextPage}
-            type="button"
-          >
-            Next
-          </button>
-        </div>
-      ) : null}
+      <ItemPaginationBar
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onNextPage={onNextPage}
+        onPreviousPage={onPreviousPage}
+        paginatedCount={paginatedItems.length}
+        totalPages={totalPages}
+        visibleCount={visibleItems.length}
+      />
 
-      <ul className="item-list">
-        {paginatedItems.map((item) => (
-          <li key={item.id} className="item-card">
-            <strong>{item.title}</strong>
-            <p className="item-owner">
-              作成者: {item.owner.display_name} (@{item.owner.username})
-            </p>
-            <time className="item-timestamp" dateTime={item.created_at}>
-              {formatItemDate(item.created_at)}
-            </time>
-            {item.tags.length ? (
-              <div className="item-tags">
-                {item.tags.map((tag) => (
-                  <span key={tag.name} className="tag-chip">
-                    #{tag.name}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-            <p>{item.description ?? "説明はありません。"}</p>
-            {user?.username === item.owner.username ? (
-              <div className="item-actions">
-                <button
-                  className="ghost-button"
-                  onClick={() => handleEdit(item)}
-                  type="button"
-                >
-                  編集
-                </button>
-                <button
-                  className="danger-button"
-                  onClick={() => void handleDelete(item.id)}
-                  type="button"
-                >
-                  削除
-                </button>
-              </div>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+      <ItemCardList
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+        items={paginatedItems}
+        user={user}
+      />
 
       {!visibleItems.length ? (
         <p className="empty-state">
-          {selectedTag
-            ? `#${selectedTag} に一致するアイテムはありません。`
-            : ownershipFilter === "mine"
-              ? "自分のアイテムはまだありません。"
-              : "条件に一致するアイテムはありません。"}
+          {getEmptyStateMessage(selectedTag, ownershipFilter)}
         </p>
       ) : null}
     </section>

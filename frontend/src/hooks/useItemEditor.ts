@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { components } from "../generated/schema";
 import { parseTagInput } from "../lib/item-utils";
+import { uiCopy } from "../lib/ui-copy";
 
 type Item = components["schemas"]["ItemRead"];
 type ItemCreate = components["schemas"]["ItemCreate"];
@@ -41,13 +42,13 @@ export function useItemEditor(currentUsername: string | null) {
 
   function validateItemPayload(payload: ItemCreate) {
     if (!payload.title) {
-      return "タイトルは必須です。";
+      return uiCopy.items.editor.validation.titleRequired;
     }
     if (payload.title.length > 120) {
-      return "タイトルは120文字以内にしてください。";
+      return uiCopy.items.editor.validation.titleTooLong;
     }
     if ((payload.tags ?? []).length > 10) {
-      return "タグは10件以内にしてください。";
+      return uiCopy.items.editor.validation.tooManyTags;
     }
     return null;
   }
