@@ -63,6 +63,8 @@ DB スキーマが変わらない API や UI の変更だけであれば migrati
 - `20260403_0001_initial_schema.py`: `users`、`items`、`auth_tokens` を作成
 - `20260403_0002_add_tags.py`: `tags`、`item_tags` を作成
 
+migration を追加したら、この一覧を同じコミットで更新してください。スキーマ差分を伴う変更は migration ファイル、`python -m alembic upgrade head` の確認、この一覧の更新までを完了条件とします。
+
 ## API
 
 ### Health

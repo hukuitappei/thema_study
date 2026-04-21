@@ -84,7 +84,9 @@ export function ItemListPanel({
     <section className="panel">
       <header className="panel-header">
         <h2>{uiCopy.items.list.heading}</h2>
-        <span>{uiCopy.items.list.headerPage(currentPage, totalPages)}</span>
+        <span aria-label={uiCopy.items.list.pageIndicator(currentPage, totalPages)}>
+          {uiCopy.items.list.headerPage(currentPage, totalPages)}
+        </span>
       </header>
 
       <p className="list-summary">{getListSummary(selectedTag, visibleItems.length)}</p>

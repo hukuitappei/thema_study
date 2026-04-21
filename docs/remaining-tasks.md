@@ -15,9 +15,7 @@
 
 ## Remaining
 
-- 必要になったら hook 単位のテストを追加して controller 形状の退行を検知しやすくする。
-- migration が増えたら `backend/README.md` の migration 一覧を追随更新する。
-- `ui-copy.ts` に未集約の文言と表記ルールを寄せ切り、表示文言の命名規約を固定する。 ✓ 完了（`ItemStatusPanel` ラベル・`ItemListPanel` ヘッダー文言を集約）
+- 現時点の残タスクはありません。主要 UI 文言は `frontend/src/lib/ui-copy.ts` に集約済みで、`useItemsController` は分割済み hook の返却形を型で固定しています。
 
 ## Known Constraints
 

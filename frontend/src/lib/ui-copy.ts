@@ -86,6 +86,7 @@ export const uiCopy = {
       loading: "読み込み中...",
       loadFailed: "読み込みに失敗しました。",
       pageError: (message: string) => `初期化エラー: ${message}`,
+      ariaLabel: "API status",
       labels: {
         status: "Status",
         service: "Service",
@@ -116,6 +117,7 @@ export const uiCopy = {
     list: {
       heading: "サンプルデータ",
       headerPage: (current: number, total: number) => `${current} / ${total} ページ`,
+      pageIndicator: (current: number, total: number) => `ページ ${current} / ${total}`,
       summaryAll: (count: number) => `全 ${count} 件を表示中`,
       summaryTag: (tag: string, count: number) => `#${tag} で ${count} 件を表示中`,
       emptyByTag: (tag: string) => `#${tag} に一致するアイテムはありません。`,
@@ -128,6 +130,7 @@ export const uiCopy = {
         searchPlaceholder: "タイトル・説明・タグで絞り込む",
       },
       pagination: {
+        ariaLabel: "ページネーション",
         previous: "前へ",
         next: "次へ",
         summary: (shown: number, total: number) =>

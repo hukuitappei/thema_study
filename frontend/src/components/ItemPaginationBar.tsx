@@ -24,7 +24,7 @@ export function ItemPaginationBar({
   }
 
   return (
-    <div className="pagination-bar" aria-label="Pagination">
+    <div className="pagination-bar" aria-label={uiCopy.items.list.pagination.ariaLabel}>
       <button
         className="ghost-button"
         disabled={currentPage === 1}

@@ -26,7 +26,7 @@ export function ItemStatusPanel({
         </p>
       ) : null}
       {!loading && !pageError && health ? (
-        <dl className="status-grid" aria-label="API status">
+        <dl className="status-grid" aria-label={uiCopy.items.status.ariaLabel}>
           <div>
             <dt>{uiCopy.items.status.labels.status}</dt>
             <dd>{health.status}</dd>
