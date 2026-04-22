@@ -19,3 +19,5 @@ frontend/openapi/schema.json
 *.log
 *.egg-info/
 *.tsbuildinfo
+.claude/
+tmp-skills/
