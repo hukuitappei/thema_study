@@ -1,22 +1,37 @@
 # thema_typescrypt
 
-TypeScript フロントエンドと Python バックエンドを組み合わせた、認証付きアイテム管理アプリです。
+認証付きのタグ付きアイテム管理アプリです。TODO 管理アプリの土台として使える、React + TypeScript frontend と FastAPI backend のフルスタック MVP です。
 
-## 構成
+## Project Status
+
+MVP 完了扱いです。必須の未実装項目はありません。
+
+詳細は [docs/remaining-tasks.md](docs/remaining-tasks.md) にまとめています。
+
+## Structure
 
 - `frontend`: Vite + React + TypeScript
 - `backend`: FastAPI + SQLAlchemy + SQLite + Alembic
 
-## セットアップ
+## Main Features
 
-### フロントエンド
+- ユーザー登録、ログイン、セッション復元
+- プロフィール更新、パスワード変更
+- アイテムの作成、一覧、編集、削除
+- アイテム所有者だけが編集・削除できる権限制御
+- タグ付け、タグ一覧、タグフィルタ、タグ並び替え
+- OpenAPI schema から frontend TypeScript 型を生成
+
+## Setup
+
+### Frontend
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
-### バックエンド
+### Backend
 
 ```bash
 cd backend
@@ -27,45 +42,46 @@ python -m alembic upgrade head
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-## OpenAPI 生成
+## Development Commands
 
-バックエンドの OpenAPI スキーマを出力し、フロントエンドの生成型を更新します。
+Root scripts are kept for pnpm workspaces:
+
+```bash
+pnpm dev:frontend
+pnpm dev:backend
+pnpm test:frontend
+pnpm test:backend
+pnpm db:migrate
+pnpm api:export
+pnpm api:generate
+```
+
+This workspace also has npm dependencies under `frontend`, so frontend tests can be run directly:
+
+```bash
+cd frontend
+npm test -- --run
+```
+
+Backend tests can be run directly:
+
+```bash
+cd backend
+pytest
+```
+
+## OpenAPI
+
+Export the backend OpenAPI schema and regenerate frontend types:
 
 ```bash
 pnpm api:export
 pnpm api:generate
 ```
 
-## マイグレーション運用
+Generated frontend types are stored in `frontend/src/generated/schema.ts`.
 
-DB スキーマは Alembic で管理しています。
-
-```bash
-pnpm db:migrate
-pnpm db:revision -- -m "add tags table"
-```
-
-DB に影響するモデルや CRUD を変更したら、次の順で更新します。
-
-- `pnpm db:revision -- -m "..."`
-- 生成された `backend/alembic/versions/` 配下の差分を確認
-- `pnpm db:migrate` で適用
-- migration 一覧が増えた場合は `backend/README.md` も更新
-
-生成された revision は `revision` と `down_revision` で既存チェーンにつながる前提です。
-
-## 開発用コマンド
-
-- `pnpm dev:frontend`: フロントエンド起動
-- `pnpm dev:backend`: バックエンド起動
-- `pnpm test:frontend`: フロントエンドテスト
-- `pnpm test:backend`: バックエンドテスト
-- `pnpm db:migrate`: Alembic migration を適用
-- `pnpm db:revision`: `--autogenerate` 付きで Alembic revision を作成
-- `pnpm api:export`: OpenAPI を `frontend/openapi/schema.json` に出力
-- `pnpm api:generate`: OpenAPI から TypeScript 型を生成
-
-## 主なエンドポイント
+## API Endpoints
 
 - `GET /health`
 - `GET /api/items`
@@ -79,9 +95,9 @@ DB に影響するモデルや CRUD を変更したら、次の順で更新し�
 - `PATCH /api/auth/me`
 - `POST /api/auth/change-password`
 
-## 開発用認証情報
+## Environment
 
-ルートの `.env` に以下を設定すると、起動時に seed user を自動作成します。
+Set these values in `.env` to create the development seed user:
 
 ```env
 THEMA_DEV_USERNAME=admin
@@ -90,9 +106,6 @@ THEMA_DEV_DISPLAY_NAME=Developer Admin
 THEMA_DATABASE_URL=sqlite:///backend/data/app.db
 ```
 
-## 補足
+## Known Constraint
 
-- 既知制約と次の候補は `docs/remaining-tasks.md` にまとめています。
-- OneDrive 配下の作業フォルダでは `frontend` の `npm run build` が `spawn EPERM` で失敗することがあります。
-- 同一コードを `C:\Users\btsi1\デスクトップ\cursor\thema_typescrypt_buildcheck` に置いた検証用ワークツリーでは build 成功を確認済みです。
-- `frontend/src/lib/ui-copy.ts` に UI 文言を集約し、`App.test.tsx` も同じ定数を参照して文言差分を抑えています。
+In this OneDrive workspace, `frontend` production builds can fail with `spawn EPERM` while Vite/esbuild loads the config. This is treated as an environment constraint, not an application implementation gap. Use a non-OneDrive working copy for production build verification.
